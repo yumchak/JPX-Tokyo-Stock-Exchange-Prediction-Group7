@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JPX Prediction Dashboard – Group 7</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: monospace; background: #f9f9f9; color: #111; padding: 30px; }
+    h1 { font-size: 1.3rem; margin-bottom: 4px; }
+    p.sub { font-size: 0.8rem; color: #666; margin-bottom: 30px; }
+
+    section { margin-bottom: 36px; }
+    h2 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em;
+         border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 12px; color: #333; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { text-align: left; padding: 7px 10px; background: #eee; font-weight: bold; }
+    td { padding: 7px 10px; border-bottom: 1px solid #e0e0e0; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f0f0f0; }
+
+    .best { color: #1a7a1a; font-weight: bold; }
+    .na   { color: #aaa; font-style: italic; }
+    .note { font-size: 0.75rem; color: #888; margin-top: 6px; }
+    .warn { font-size: 0.75rem; color: #b85c00; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+  <h1>JPX Tokyo Stock Exchange – Prediction Dashboard</h1>
+  <p class="sub">Lloyds Datathon · Bristol Data Science Society · Group 7</p>
+
+  <!-- 1. Model Performance -->
+  <section>
+    <h2>Model Performance</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>RMSE</th>
+          <th>MAE</th>
+          <th>Directional Accuracy</th>
+          <th>Spearman ρ</th>
+          <th>Sharpe Ratio</th>
+          <th>Runtime (s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Model 1 — XGBoost (prices + financials)</td>
+          <td class="best">0.022033</td>
+          <td class="best">0.015143</td>
+          <td>49.51%</td>
+          <td>0.0013 (p=0.3644)</td>
+          <td class="best">0.1138</td>
+          <td>76.1</td>
+        </tr>
+        <tr>
+          <td>Model 2 — XGBoost (+ options features)</td>
+          <td class="best">0.022033</td>
+          <td class="best">0.015143</td>
+          <td>49.51%</td>
+          <td>0.0013 (p=0.3644)</td>
+          <td class="best">0.1138</td>
+          <td>71.9</td>
+        </tr>
+        <tr>
+          <td>Model 3 — Logistic Regression</td>
+          <td>0.6939</td>
+          <td class="na">—</td>
+          <td>0.0% predicted UP</td>
+          <td class="na">—</td>
+          <td class="na">—</td>
+          <td>5.58</td>
+        </tr>
+        <tr>
+          <td>Model 4 — Random Forest</td>
+          <td>0.6937</td>
+          <td class="na">—</td>
+          <td class="na">—</td>
+          <td class="na">—</td>
+          <td class="na">—</td>
+          <td>118.85</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">* Bold green = best score per metric</p>
+    <p class="warn">⚠ Model 1 &amp; 2 produce identical metrics — likely same feature set was used. Model 3 predicted 0% UP (degenerate classifier). Fill in missing MAE/Sharpe if available.</p>
+  </section>
+
+  <!-- 2. Carbon Emissions -->
+  <section>
+    <h2>Carbon Emissions (CodeCarbon)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>CO₂ Emitted (kg)</th>
+          <th>Runtime (s)</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Model 1 — XGBoost (prices + financials)</td>
+          <td>0.001057</td>
+          <td>76.1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Model 2 — XGBoost (+ options features)</td>
+          <td>0.000999</td>
+          <td>71.9</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Model 3 — Logistic Regression</td>
+          <td class="best">0.000078</td>
+          <td class="best">5.58</td>
+          <td>Lowest emissions · fastest</td>
+        </tr>
+        <tr>
+          <td>Model 4 — Random Forest</td>
+          <td>0.001651</td>
+          <td>118.85</td>
+          <td>Highest emissions · slowest</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">* Assumes 0.25 kW CPU · 0.2 kg CO₂/kWh grid intensity</p>
+  </section>
+
+  <!-- 3. Features Used -->
+  <section>
+    <h2>Features Used – XGBoost Models</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Feature</th>
+          <th>Description</th>
+          <th>Importance Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Return_1d</td><td>1-day price return</td><td class="na">FILL</td></tr>
+        <tr><td>2</td><td>Return_5d</td><td>5-day price return</td><td class="na">FILL</td></tr>
+        <tr><td>3</td><td>MA_ratio</td><td>Price / moving average ratio</td><td class="na">FILL</td></tr>
+        <tr><td>4</td><td>Vol_ratio</td><td>Volume ratio</td><td class="na">FILL</td></tr>
+        <tr><td>5</td><td>NetSales</td><td>Fundamental — net sales</td><td class="na">FILL</td></tr>
+        <tr><td>6</td><td>OperatingProfit</td><td>Fundamental — operating profit</td><td class="na">FILL</td></tr>
+        <tr><td>7</td><td>EarningsPerShare</td><td>Fundamental — EPS</td><td class="na">FILL</td></tr>
+        <tr><td>8</td><td>EquityToAssetRatio</td><td>Fundamental — balance sheet ratio</td><td class="na">FILL</td></tr>
+        <tr><td>9</td><td>day_range</td><td>Intraday high-low range</td><td class="na">FILL</td></tr>
+        <tr><td>10</td><td>night_range</td><td>Overnight price range</td><td class="na">FILL</td></tr>
+        <tr><td>11</td><td>was_traded</td><td>Binary — stock was traded that day</td><td class="na">FILL</td></tr>
+        <tr><td>12</td><td>large_trade</td><td>Binary — large trade flag</td><td class="na">FILL</td></tr>
+      </tbody>
+    </table>
+    <p class="note">* Run xgb_model.get_booster().get_score(importance_type='gain') to get importance scores</p>
+  </section>
+
+  <!-- 4. Dataset Summary -->
+  <section>
+    <h2>Dataset Summary</h2>
+    <table>
+      <thead>
+        <tr><th>Attribute</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Train Rows</td><td>1,876,430</td></tr>
+        <tr><td>Test Rows</td><td>451,559</td></tr>
+        <tr><td>Train / Test Split</td><td>~80 / 20</td></tr>
+        <tr><td>Features Used (Model 1 &amp; 2)</td><td>12</td></tr>
+        <tr><td>Target Variable</td><td>Return (continuous)</td></tr>
+        <tr><td>Correlation (Predicted vs Actual)</td><td>0.003595 (near zero)</td></tr>
+        <tr><td>Competition</td><td>JPX Tokyo Stock Exchange Prediction (Kaggle)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</body>
+</html>
